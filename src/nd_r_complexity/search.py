@@ -107,20 +107,57 @@ def generate_1d_basis_functions(p_values, q_values, X_values):
     elementary_functions.append(Factorial())
 
     # Start with elementary functions
-    all_1d_functions = list(elementary_functions)
+    for f in elementary_functions:
+        yield f
 
     # Add mixed functions (combinations of two distinct elementary functions)
     for f1, f2 in itertools.combinations(elementary_functions, 2):
-        all_1d_functions.append(MixedBasisFunction([f1, f2]))
-
-    return all_1d_functions
+        yield MixedBasisFunction([f1, f2])
 
 
 def generate_nd_basis_functions(num_dimensions, p_values, q_values, X_values):
     """Generates all combinations of n-dimensional basis functions."""
-    one_d_funcs = generate_1d_basis_functions(p_values, q_values, X_values)
-    nd_combinations = list(itertools.product(one_d_funcs, repeat=num_dimensions))
-    return [NDBasisFunction(list(combo)) for combo in nd_combinations]
+    one_d_funcs = list(generate_1d_basis_functions(p_values, q_values, X_values))
+    nd_combinations = itertools.product(one_d_funcs, repeat=num_dimensions)
+    for combo in nd_combinations:
+        yield NDBasisFunction(list(combo))
+
+
+
+def n_choose_k(n, k):
+    """Calculates the number of combinations (n choose k)."""
+    if k < 0 or k > n:
+        return 0
+    if k == 0 or k == n:
+        return 1
+    if k > n // 2:
+        k = n - k
+
+    result = 1
+    for i in range(k):
+        result = result * (n - i) // (i + 1)
+    return result
+
+
+def count_1d_basis_functions(p_values, q_values, X_values):
+    """Calculates the number of 1D basis functions."""
+    num_elementary = len(p_values) + len(q_values) + len(X_values) + 1
+    return num_elementary + n_choose_k(num_elementary, 2)
+
+
+def count_nd_basis_functions(num_dimensions, p_values, q_values, X_values):
+    """Calculates the number of n-dimensional basis funcpythtions."""
+    return count_1d_basis_functions(p_values, q_values, X_values) ** num_dimensions
+
+
+def count_basis_function_combinations(
+    num_dimensions, num_terms, p_values, q_values, X_values
+):
+    """Calculates the number of combinations of basis functions."""
+    return n_choose_k(
+        count_nd_basis_functions(num_dimensions, p_values, q_values, X_values),
+        num_terms,
+    )
 
 
 def generate_basis_function_combinations(

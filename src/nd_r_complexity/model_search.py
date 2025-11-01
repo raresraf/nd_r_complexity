@@ -14,12 +14,10 @@ from .search import (
 
 
 def fit_model(basis_combination, X_data, y_data):
-    # Create design matrix
     X_design = np.zeros((len(X_data), len(basis_combination)))
     for i, basis_func in enumerate(basis_combination):
         X_design[:, i] = basis_func(*X_data.T)
 
-    # Fit linear regression model
     model = LinearRegression()
     try:
         model.fit(X_design, y_data)
@@ -52,16 +50,12 @@ def find_best_model(
     num_dimensions = X_data.shape[1]
 
     if search_strategy == "grid":
-        basis_combinations = list(
-            generate_basis_function_combinations(
-                num_dimensions, num_terms, p_values, q_values, X_values
-            )
+        basis_combinations = generate_basis_function_combinations(
+            num_dimensions, num_terms, p_values, q_values, X_values
         )
     elif search_strategy == "random":
-        basis_combinations = list(
-            generate_random_basis_function_combinations(
-                num_dimensions, num_terms, p_values, q_values, X_values, num_samples
-            )
+        basis_combinations = generate_random_basis_function_combinations(
+            num_dimensions, num_terms, p_values, q_values, X_values, num_samples
         )
     else:
         raise ValueError("Invalid search strategy. Choose 'grid' or 'random'.")
