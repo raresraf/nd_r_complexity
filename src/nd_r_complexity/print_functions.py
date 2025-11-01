@@ -5,17 +5,19 @@ from . import constants
 
 def print_functions(num_dimensions, num_terms, p_values, q_values, X_values):
     """Prints all the possible functions that will be iterated."""
-    basis_combinations = generate_basis_function_combinations(
-        num_dimensions, num_terms, p_values, q_values, X_values
+    basis_combinations = list(
+        generate_basis_function_combinations(
+            num_dimensions, num_terms, p_values, q_values, X_values
+        )
     )
+    total_combinations = len(basis_combinations)
 
-    print("\nPossible combinations of basis functions:")
+    print(f"\nTotal possible combinations: {total_combinations}")
 
-    count = 0
-    for basis_combination in basis_combinations:
-        count += 1
-        print(f"\n--- Combination {count} ---")
-        print(" + ".join([str(func) for func in basis_combination]))
+    for i, basis_combination in enumerate(basis_combinations):
+        if i % 1000000 == 0 or i == 0 or i == total_combinations - 1:
+            print(f"\n--- Combination {i} ---")
+            print(" + ".join([str(func) for func in basis_combination]))
 
 
 def main():
